@@ -1,3 +1,4 @@
+build/
 .idea/
 /api/
 /out/
@@ -10,9 +11,13 @@ target
 /build
 /.gradle
 .metals
-.vscode
 .bloop
 crash_report_*.txt
 
 # local development files
 **/personal/**
+.vscode
+
+main/resources
+/examples/projects/**/*.jar
+
