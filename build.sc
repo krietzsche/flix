@@ -2,6 +2,11 @@ import mill._, scalalib._, publish._, os._
 
 trait ScalaBase extends ScalaModule {
   def scalaVersion = "2.13.10"
+  def forkArgs = Seq(
+      "-XX:+AllowEnhancedClassRedefinition", // for jetbrains, https://github.com/JetBrains/JetBrainsRuntime/issues/134
+      "-XX:HotswapAgent=external",
+      "-javaagent:" ++ T.ctx.env("HOME") ++ "/ws/java/hotswap-agent/dist/hotswap-agent-core.jar=autoHotswap=true"
+    )
 }
 
 
@@ -83,14 +88,19 @@ object runtime extends ScalaBase {
 }
 
 object lsp extends ScalaBase {
-  def millSourcePath = os.pwd / 'lsp
+  def rootPath = os.pwd
+  def millSourcePath = rootPath / 'lsp
   def moduleDeps = Seq(flix)
   def ivyDeps = Agg (
     ivy"org.eclipse.lsp4j:org.eclipse.lsp4j:0.20.0",
     ivy"com.outr::scribe:3.11.1",
     ivy"com.outr::scribe-file:3.11.1",
-    ivy"com.lihaoyi::pprint:0.7.0"
+    ivy"com.lihaoyi::pprint:0.7.0",
   )
+  def unmanagedClasspath = T {
+    if (!os.exists(rootPath / "lib")) Agg()
+    else Agg.from(os.list(rootPath / "lib").map(PathRef(_)))
+  }
   def assembly = T {
     val res = super.assembly()
     val appJar = os.Path(sys.env.get("HOME").get.toString) / "app" / "flix-lsp.jar"
