@@ -23,4 +23,5 @@ case class Manifest(name: String,
                     SemVer, license: Option[String],
                     authors: List[String],
                     dependencies: List[Dependency],
+                    src: Option[String],
                     libLevel: LibLevel) { }

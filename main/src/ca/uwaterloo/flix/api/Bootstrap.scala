@@ -133,6 +133,8 @@ object Bootstrap {
     */
   private def getSourceDirectory(p: Path): Path = p.resolve("./src/").normalize()
 
+  private def getSourceDirectory(p: Path, src: String): Path = p.resolve(src).normalize()
+  
   /**
     * Returns the path to the test directory relative to the given path `p`.
     */
@@ -352,6 +354,7 @@ class Bootstrap(val projectPath: Path, apiKey: Option[String]) {
   private var jarPackagePaths: List[Path] = List.empty
 
   private var libLevel: LibLevel = LibLevel.All
+  private var src: String = "src" 
   /**
     * Parses `flix.toml` to a Manifest and downloads all required files.
     * Then makes a list of all flix source files, flix packages
@@ -385,13 +388,16 @@ class Bootstrap(val projectPath: Path, apiKey: Option[String]) {
     }
     out.println("Dependency resolution completed.")
 
-    // 3. Add *.flix, src/**.flix and test/**.flix
-    val filesHere = Bootstrap.getAllFlixFilesHere(projectPath)
-    val filesSrc = Bootstrap.getAllFilesWithExt(Bootstrap.getSourceDirectory(projectPath), "flix")
-    val filesTest = Bootstrap.getAllFilesWithExt(Bootstrap.getTestDirectory(projectPath), "flix")
-    sourcePaths = filesHere ++ filesSrc ++ filesTest
-
-    ().toSuccess
+    if(manifest.src.isDefined) {
+      sourcePaths = Bootstrap.getAllFilesWithExt(Bootstrap.getSourceDirectory(projectPath, src), "flix")
+    } else {
+      // 3. Add *.flix, src/**.flix and test/**.flix
+      val filesHere = Bootstrap.getAllFlixFilesHere(projectPath)
+      val filesSrc = Bootstrap.getAllFilesWithExt(Bootstrap.getSourceDirectory(projectPath), "flix")
+      val filesTest = Bootstrap.getAllFilesWithExt(Bootstrap.getTestDirectory(projectPath), "flix")
+      sourcePaths = filesHere ++ filesSrc ++ filesTest
+    }
+    ().toOk
   }
 
   /**

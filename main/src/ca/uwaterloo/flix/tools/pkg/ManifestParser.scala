@@ -86,9 +86,11 @@ object ManifestParser {
       flix <- getRequiredStringProperty("package.flix", parser, p);
       flixSemVer <- toFlixVer(flix, p);
 
-      flixLibStr <- getOptionalStringProperty("package.lib", parser, p);
+      flixLibStr <- getOptionalStringProperty("package.libLevel", parser, p);
       flixLibLevel <- toFlixLibLevel(flixLibStr, p);
 
+      flixSrc <- getOptionalStringProperty("package.src", parser, p);
+      
       license <- getOptionalStringProperty("package.license", parser, p);
 
       authors <- getRequiredArrayProperty("package.authors", parser, p);
@@ -109,7 +111,7 @@ object ManifestParser {
       jarDeps <- getOptionalTableProperty("jar-dependencies", parser, p);
       jarDepsList <- collectDependencies(jarDeps, flixDep = false, prodDep = false, jarDep = true, p)
 
-    ) yield Manifest(name, description, versionSemVer, flixSemVer, license, authorsList, depsList ++ devDepsList ++ mvnDepsList ++ devMvnDepsList, flixLibLevel)
+    ) yield Manifest(name, description, versionSemVer, flixSemVer, license, authorsList, depsList ++ devDepsList ++ mvnDepsList ++ devMvnDepsList, flixSrc, flixLibLevel)
   }
 
   private def checkKeys(parser: TomlParseResult, p: Path): Result[Unit, ManifestError] = {
@@ -123,7 +125,7 @@ object ManifestParser {
 
     val dottedKeys = parser.dottedKeySet().asScala.toSet
     val packageKeys = dottedKeys.filter(s => s.startsWith("package."))
-    val allowedPackageKeys = Set("package.name", "package.description", "package.version", "package.flix", "package.authors", "package.license", "package.lib")
+    val allowedPackageKeys = Set("package.name", "package.description", "package.version", "package.flix", "package.authors", "package.license", "package.libLevel", "package.src")
     val illegalPackageKeys = packageKeys.diff(allowedPackageKeys)
     if (illegalPackageKeys.nonEmpty) {
       return Err(ManifestError.IllegalPackageKeyFound(p, illegalPackageKeys.head))
@@ -224,6 +226,12 @@ object ManifestParser {
     }
   }
 
+  private def toFlixSrc(s: Option[String], p: Path): Result[String, ManifestError] = {
+    s match {
+      case Some(src) => Ok(src)
+      case None => Ok("src")
+    }
+  }
 
   /**
     * Converts a TomlTable to a list of Dependencies. This requires
