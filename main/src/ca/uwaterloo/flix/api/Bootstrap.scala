@@ -30,6 +30,7 @@ import java.util.zip.{ZipEntry, ZipOutputStream}
 import java.util.{Calendar, GregorianCalendar}
 import scala.collection.mutable
 import scala.util.{Failure, Success, Using}
+import ca.uwaterloo.flix.util.LibLevel
 
 object Bootstrap {
 
@@ -350,6 +351,7 @@ class Bootstrap(val projectPath: Path, apiKey: Option[String]) {
   private var mavenPackagePaths: List[Path] = List.empty
   private var jarPackagePaths: List[Path] = List.empty
 
+  private var libLevel: LibLevel = LibLevel.All
   /**
     * Parses `flix.toml` to a Manifest and downloads all required files.
     * Then makes a list of all flix source files, flix packages
@@ -362,6 +364,7 @@ class Bootstrap(val projectPath: Path, apiKey: Option[String]) {
       case Ok(m) => m
       case Err(e) => return BootstrapError.ManifestParseError(e).toFailure
     }
+    libLevel = manifest.libLevel
 
     // 2. Check each dependency is available or download it.
     val manifests: List[Manifest] = FlixPackageManager.findTransitiveDependencies(manifest, projectPath, apiKey) match {
@@ -424,6 +427,9 @@ class Bootstrap(val projectPath: Path, apiKey: Option[String]) {
     * map to reflect the current source files and packages.
     */
   def reconfigureFlix(flix: Flix): Unit = {
+
+    flix.setOptions(flix.options.copy( lib = libLevel ))
+
     val previousSources = timestamps.keySet
 
     for (path <- sourcePaths if hasChanged(path)) {

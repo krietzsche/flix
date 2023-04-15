@@ -15,9 +15,12 @@
  */
 package ca.uwaterloo.flix.tools.pkg
 
+import ca.uwaterloo.flix.util.LibLevel
+
 case class Manifest(name: String,
                     description: String,
                     version: SemVer, flix:
                     SemVer, license: Option[String],
                     authors: List[String],
-                    dependencies: List[Dependency]) { }
+                    dependencies: List[Dependency],
+                    libLevel: LibLevel) { }

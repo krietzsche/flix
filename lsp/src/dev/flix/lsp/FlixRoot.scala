@@ -28,7 +28,10 @@ class FlixRoot {
   /** The Flix instance (the same instance is used for incremental compilation).
     */
   private val flix: Flix =
-    new Flix().setFormatter(NoFormatter).setOptions(Options.Default.copy(debug = true, installDeps = true ))
+    new Flix().setFormatter(NoFormatter).setOptions(Options.Default.copy(
+      debug = true, 
+      installDeps = true
+    ))
 
   /** A map from source URIs to source code.
     */

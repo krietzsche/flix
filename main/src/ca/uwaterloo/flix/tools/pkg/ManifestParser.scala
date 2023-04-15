@@ -25,6 +25,7 @@ import java.net.{MalformedURLException, URI, URL}
 import java.nio.file.Path
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.SetHasAsScala
+import ca.uwaterloo.flix.util.LibLevel
 
 object ManifestParser {
 
@@ -85,6 +86,9 @@ object ManifestParser {
       flix <- getRequiredStringProperty("package.flix", parser, p);
       flixSemVer <- toFlixVer(flix, p);
 
+      flixLibStr <- getOptionalStringProperty("package.lib", parser, p);
+      flixLibLevel <- toFlixLibLevel(flixLibStr, p);
+
       license <- getOptionalStringProperty("package.license", parser, p);
 
       authors <- getRequiredArrayProperty("package.authors", parser, p);
@@ -105,7 +109,7 @@ object ManifestParser {
       jarDeps <- getOptionalTableProperty("jar-dependencies", parser, p);
       jarDepsList <- collectDependencies(jarDeps, flixDep = false, prodDep = false, jarDep = true, p)
 
-    ) yield Manifest(name, description, versionSemVer, flixSemVer, license, authorsList, depsList ++ devDepsList ++ mvnDepsList ++ devMvnDepsList ++ jarDepsList)
+    ) yield Manifest(name, description, versionSemVer, flixSemVer, license, authorsList, depsList ++ devDepsList ++ mvnDepsList ++ devMvnDepsList, flixLibLevel)
   }
 
   private def checkKeys(parser: TomlParseResult, p: Path): Result[Unit, ManifestError] = {
@@ -119,7 +123,7 @@ object ManifestParser {
 
     val dottedKeys = parser.dottedKeySet().asScala.toSet
     val packageKeys = dottedKeys.filter(s => s.startsWith("package."))
-    val allowedPackageKeys = Set("package.name", "package.description", "package.version", "package.flix", "package.authors", "package.license")
+    val allowedPackageKeys = Set("package.name", "package.description", "package.version", "package.flix", "package.authors", "package.license", "package.lib")
     val illegalPackageKeys = packageKeys.diff(allowedPackageKeys)
     if (illegalPackageKeys.nonEmpty) {
       return Err(ManifestError.IllegalPackageKeyFound(p, illegalPackageKeys.head))
@@ -209,6 +213,17 @@ object ManifestParser {
       case e: NumberFormatException => Err(ManifestError.VersionNumberWrong(p, s, e.getMessage))
     }
   }
+
+  private def toFlixLibLevel(s: Option[String], p: Path): Result[LibLevel, ManifestError] = {
+    s match {
+      case Some("nix") => Ok(LibLevel.Nix)
+      case Some("min") => Ok(LibLevel.Min)
+      case Some("all") => Ok(LibLevel.All)
+      case None => Ok(LibLevel.All)
+      case _ => Err(ManifestError.IllegalName(p, "lib"))
+    }
+  }
+
 
   /**
     * Converts a TomlTable to a list of Dependencies. This requires

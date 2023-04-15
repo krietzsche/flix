@@ -67,8 +67,6 @@ import org.eclipse.lsp4j.MarkedString
 import org.eclipse.lsp4j.PublishDiagnosticsParams
 
 import ca.uwaterloo.flix.api.lsp
-import ca.uwaterloo.flix.api.Bootstrap
-import com.google.gson.JsonObject
 
 class FlixServer(
     ec: ExecutionContextExecutorService,
@@ -76,7 +74,7 @@ class FlixServer(
     sh: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 ) {
 
-  val root = new FlixRoot()
+  lazy val root = new FlixRoot()
 
   /** LSP */
   val languageClient = new DelegatingLanguageClient(NoopClient)
