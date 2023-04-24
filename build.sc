@@ -21,13 +21,13 @@ object flix extends ScalaBase {
   def ivyDeps = Agg (
     ivy"com.chuusai::shapeless:2.3.3",
     ivy"com.github.scopt::scopt:4.0.1",
-    ivy"org.java-websocket:Java-WebSocket:1.3.9",
+    ivy"org.java-websocket:Java-WebSocket:1.5.3",
     ivy"org.jline:jline:3.5.1",
     ivy"org.json4s::json4s-ast:3.5.5",
     ivy"org.json4s::json4s-core:3.5.5",
     ivy"org.json4s::json4s-native:3.5.5",
     ivy"org.ow2.asm:asm:9.2",
-    ivy"org.parboiled::parboiled:2.2.1",
+    ivy"org.parboiled::parboiled:2.4.1",
     ivy"org.scala-lang.modules::scala-parallel-collections:0.2.0",
     ivy"org.scala-lang.modules::scala-xml:2.0.0-M1",
     ivy"org.scala-lang:scala-reflect:2.13.2",
@@ -36,7 +36,7 @@ object flix extends ScalaBase {
     ivy"io.get-coursier::coursier:2.1.0-RC4",
     ivy"org.tomlj:tomlj:1.1.0",
     // for bdd
-    ivy"com.google.guava:guava:25.1-jre"
+    ivy"com.google.guava:guava:31.1-jre"
   )
 
   def publishVersion = "0.12.0"
