@@ -397,7 +397,7 @@ class Bootstrap(val projectPath: Path, apiKey: Option[String]) {
       val filesTest = Bootstrap.getAllFilesWithExt(Bootstrap.getTestDirectory(projectPath), "flix")
       sourcePaths = filesHere ++ filesSrc ++ filesTest
     }
-    ().toOk
+    ().toSuccess
   }
 
   /**
