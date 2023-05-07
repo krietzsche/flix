@@ -27,7 +27,6 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import org.eclipse.lsp4j.jsonrpc.messages.{Either => JEither}
 
 import ca.uwaterloo.flix.api.lsp.provider._
-import ca.uwaterloo.flix.api.lsp.provider.completion.{DeltaContext, Differ}
 import ca.uwaterloo.flix.api.{CrashHandler, Flix, Version}
 import ca.uwaterloo.flix.language.CompilationMessage
 import ca.uwaterloo.flix.language.ast.SourceLocation
@@ -48,23 +47,7 @@ import org.json4s.native.JsonMethods.parse
 import java.nio.file.Paths
 import java.net.URI
 import java.nio.file.Files
-import org.eclipse.lsp4j.CompletionOptions
-import org.eclipse.lsp4j.FileOperationFilter
-import org.eclipse.lsp4j.FileOperationsServerCapabilities
-import org.eclipse.lsp4j.WorkspaceServerCapabilities
-import org.eclipse.lsp4j.FileOperationOptions
-import org.eclipse.lsp4j.InitializedParams
-import org.eclipse.lsp4j.SymbolKind
-import org.eclipse.lsp4j.SymbolInformation
-import org.eclipse.lsp4j.CodeLensOptions
-import org.eclipse.lsp4j.Hover
-import org.eclipse.lsp4j.HoverParams
-import org.eclipse.lsp4j.MarkupKind
-import org.eclipse.lsp4j.MarkupContent
-import org.eclipse.lsp4j.ReferenceParams
-import org.eclipse.lsp4j.TextDocumentPositionParams
-import org.eclipse.lsp4j.MarkedString
-import org.eclipse.lsp4j.PublishDiagnosticsParams
+import org.eclipse.lsp4j._
 
 import ca.uwaterloo.flix.api.lsp
 
